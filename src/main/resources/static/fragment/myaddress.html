@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <script src="../layui/layui.js"></script>
+    <script src="../js/jquery.min.js"></script>
+    <script src="../js/common.js"></script>
+    <script>
+
+        layui.use(['element','layer', 'form','table'], function() {
+            layer = parent.layer === undefined ? layui.layer : parent.layer;
+             form = layui.form,
+                element = layui.element,
+                table = layui.table;
+            $(function () {
+                var uid=getQueryString("pnum");
+                if(uid==""||uid==null||uid===undefined){
+                    //alert("非法参数错误，请重新打开页面!");
+                    window.location.reload();
+                }
+
+                var d={uid:uid};
+                $.ajax({
+                    type:"post",
+                    url:"/luck/user/get",
+                    async:true,
+                    data:JSON.stringify(d),
+                    processData:false,
+                    contentType: "application/json",
+                    success:function(res){
+                        if(res.status=="SUCCESS"){
+                            var data=res.data;
+                            $("#uName").val(data.uname);
+                            $("#tel").val(data.tel);
+                            $("#province").val(data.province);
+                            $("#city").val(data.city);
+                            $("#address").val(data.address);
+                        }
+                    }
+                });
+
+                $("#btn_ok").click(function () {
+                    var a=$("#uName").val();
+                    var b=$("#tel").val();
+                    var c=$("#province").val();
+                    var e=$("#city").val();
+                    var f=$("#address").val();
+                    var d={uid:uid,uname:a,tel:b,province:c,city:e,address:f};
+                    $.ajax({
+                        type:"post",
+                        url:"/luck/user/update",
+                        async:true,
+                        data:JSON.stringify(d),
+                        processData:false,
+                        contentType: "application/json",
+                        success:function(res){
+                             //parent.location.reload();
+                             layer.msg("添加收获地址成功");
+                             layer.closeAll("iframe");
+
+                        },error:function () {
+                            layer.msg("添加收获地址成功");
+                             layer.closeAll("iframe");
+                        }
+                    });
+                })
+
+                $("#btn_cancel").click(function () {
+                    layer.closeAll("iframe");
+                })
+            })
+        });
+
+    </script>
+</head>
+<body>
+<!--商品修改-->
+<div style="padding-top: 50px">
+    <form id="updateForm" class="layui-form" action="">
+
+        <input type="hidden" id="pid" name="id">
+        <div class="layui-form-item">
+            <label class="layui-form-label">姓名</label>
+            <div class="layui-input-block">
+                <input type="text" name="uname" id="uName"  class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">电话</label>
+            <div class="layui-input-block">
+                <input type="text" name="tel" id="tel"  class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">省</label>
+            <div class="layui-input-block">
+                <input type="text" name="province" id="province"  class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">市</label>
+            <div class="layui-input-block">
+                <input type="text" name="city" id="city"  class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">详细地址</label>
+            <div class="layui-input-block">
+                <input type="text" name="address" id="address"  class="layui-input">
+            </div>
+        </div>
+
+
+        <!--<div class="layui-form-item">-->
+            <!--<label class="layui-form-label">开关</label>-->
+            <!--<div class="layui-input-block">-->
+                <!--<input type="number" name="weight" id="luckWeight" placeholder="%" class="layui-input">-->
+            <!--</div>-->
+        <!--</div>-->
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button id="btn_ok" class="layui-btn">确定</button>
+                <button id="btn_cancel" class="layui-btn layui-btn-primary">取消</button>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>

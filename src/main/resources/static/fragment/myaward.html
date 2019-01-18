@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <script src="../layui/layui.js"></script>
+    <script src="../js/jquery.min.js"></script>
+    <script src="../js/common.js"></script>
+    <script>
+
+        layui.use(['element','layer', 'form','table'], function() {
+            layer = parent.layer === undefined ? layui.layer : parent.layer;
+                form = layui.form,
+                element = layui.element,
+                table = layui.table;
+            $(function () {
+
+            })
+
+           var uid= getQueryString("pnum");
+            if(uid==""||uid==null||uid===undefined){
+                alert("非法参数错误，请重新打开页面!");
+                window.location.reload();
+            }
+
+            table.render({
+                elem: '#demo'
+                ,height: 312
+                ,url: '/luck/lup/lkp?uid='+uid //数据接口
+                ,cols: [[ //表头
+                    // {field: 'id', title: 'ID', width:30, sort: true}
+                    {field: 'pname', title: '商品名', width:100}
+                    ,{field: 'ltime', title: '中奖时间', width:100}
+                    ,{field: 'exchange', title: '兑换状态', width:100,templet: function(d){
+                            return d.exchange==1?"已兑换":"未兑换"
+                        }}
+                ]]
+            });
+        });
+
+    </script>
+</head>
+<body>
+<div>
+    <table id="demo" lay-filter="test"></table>
+</div>
+</body>
+</html>

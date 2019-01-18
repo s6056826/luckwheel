@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <script src="../layui/layui.js"></script>
+    <script src="../js/jquery.min.js"></script>
+    <script src="../js/common.js"></script>
+    <script>
+
+        layui.use(['element','layer', 'form','table'], function() {
+            layer = parent.layer === undefined ? layui.layer : parent.layer;
+
+            $(function () {
+                var id=getQueryString("id");
+                if(id!=null&&id!=''){
+                    var d={id:id};
+                    $.ajax({
+                        type:"post",
+                        url:"/luck/product/get",
+                        async:true,
+                        data:JSON.stringify(d),
+                        processData:false,
+                        contentType: "application/json",
+                        success:function(res){
+                            if(res.status=="SUCCESS"){
+                                var data=res.data;
+                                $("#pid").val(data.id);
+                                $("#productName").val(data.name);
+                                $("#luckWeight").val(data.weight);
+                            }
+                        }
+                    });
+
+                }
+
+                $("#btn_update").click(function () {
+                    var a=$("#pid").val();
+                    var b=$("#productName").val();
+                    var c=$("#luckWeight").val();
+                    var d={id:a,name:b,weight:c};
+                    $.ajax({
+                        type:"post",
+                        url:"/luck/product/update",
+                        async:true,
+                        data:JSON.stringify(d),
+                        processData:false,
+                        contentType: "application/json",
+                        success:function(res){
+                            parent.location.reload();
+                            layer.closeAll("iframe");
+
+                        },error:function () {
+                            parent.location.reload();
+                            layer.closeAll("iframe");
+                        }
+                    });
+                })
+
+                $("#btn_cancel").click(function () {
+                    layer.closeAll("iframe");
+                })
+            })
+        });
+
+    </script>
+</head>
+<body>
+<!--商品修改-->
+<div id="showChange" style="padding-top: 50px">
+    <form id="updateForm" class="layui-form" action="">
+
+        <input type="hidden" id="pid" name="id">
+        <div class="layui-form-item">
+            <label class="layui-form-label">商品名</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" id="productName"  class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">中奖概率</label>
+            <div class="layui-input-block">
+                <input type="number" name="weight" id="luckWeight" placeholder="%"  min="0.00" max="100.00" step="0.5" class="layui-input">
+            </div>
+        </div>
+
+        <!--<div class="layui-form-item">-->
+            <!--<label class="layui-form-label">开关</label>-->
+            <!--<div class="layui-input-block">-->
+                <!--<input type="number" name="weight" id="luckWeight" placeholder="%" class="layui-input">-->
+            <!--</div>-->
+        <!--</div>-->
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button id="btn_update" class="layui-btn">修改</button>
+                <button id="btn_cancel" class="layui-btn layui-btn-primary">取消</button>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>

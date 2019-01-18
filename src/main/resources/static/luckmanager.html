@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<title>幸运商品管理台</title>
+		<link rel="stylesheet" href="layui/css/layui.css">
+		<style>
+			.lucky_header {
+    background-image: url(http://51.cmg0768.com/statics/templates/bxsdbtwo/images/mobile/lucky/lucky_header.png?v=1008);
+    background-size: 100% 100%;
+    background-position: top center;
+    background-repeat: no-repeat;
+    height: 0;
+    padding-bottom: calc(133/ 474 * 100%);
+    }
+		</style>
+		<script src="layui/layui.js"></script>
+		<script type="text/html" id="toolbarDemo">
+			<div class="layui-btn-container">
+				<button class="layui-btn layui-btn-sm" lay-event="update">编辑</button>
+				<button class="layui-btn layui-btn-sm" lay-event="delete">删除</button>
+			</div>
+		</script>
+
+		<script type="text/html" id="toolbarDemo1">
+			<div class="layui-btn-container">
+				<button  id="btn_add"class="layui-btn layui-btn-sm" lay-event="add">添加</button>
+			</div>
+		</script>
+
+
+		<script type="text/html" id="toolbarDemo2">
+			<div class="layui-btn-container">
+				<button  id="btn_exchange"class="layui-btn layui-btn-sm" lay-event="exchange">兑换奖品</button>
+			</div>
+		</script>
+
+		<script type="text/html" id="toolbarDemo3">
+			<div class="layui-btn-container">
+				<button class="layui-btn layui-btn-sm" lay-event="exchange">新的一天美好</button>
+			</div>
+		</script>
+
+		<script src="js/jquery.min.js"></script>
+		<script src="js/common.js"></script>
+		<script>
+			//一般直接写在一个js文件中
+			layui.use(['element','layer', 'form','table'], function() {
+				    layer = layui.layer,
+					form = layui.form,
+					element = layui.element,
+					table = layui.table;
+   table.render({
+    elem: '#demo'
+		,toolbar: '#toolbarDemo1'
+    ,height: 312
+    ,url: '/luck/product/lists' //数据接口
+    ,page: true //开启分页
+    ,cols: [[ //表头
+      {field: 'id', title: 'ID', width:150, sort: true, fixed: 'left'}
+      ,{field: 'name', title: '商品名', width:150}
+      ,{field: 'weight', title: '中奖概率', width:150}
+      ,{field: 'flag', title: '状态', width:150}
+      ,{fixed: 'right', title:'操作', toolbar: '#toolbarDemo', width:150}
+    ]]
+  });
+
+            // ,templet:function (d) {
+            //         return dateFtt("yyyy-MM-dd hh:mm:ss",new Date(d.ltime))
+            //     }
+
+                table.render({
+                    elem: '#demo2'
+                    ,height: 500
+                    ,toolbar: '#toolbarDemo3'
+                    ,url: '/luck/lup/lkall' //数据接口
+                    ,page: false //开启分页
+                    ,cols: [[ //表头
+                        {field: 'id', title: 'ID', width:150, sort: true, fixed: 'left'}
+                        ,{field: 'uname', title: '用户名', width:150}
+                        ,{field: 'pname', title: '中奖商品', width:150}
+                        ,{field:"ltime","title":"中奖时间", width:150,templet:function(d){
+                                return dateFtt("yyyy-MM-dd hh:mm:ss",new Date(d.ltime))
+							}}
+                        ,{field: 'province', title: '省', width:100}
+                        ,{field: 'city', title:'市', width:100}
+                        ,{field:'address',title:"地址", width:80}
+                        ,{field:'uid',title:'电话',width:100}
+                        ,{field:'exchange',title:"是否兑换", width:100,templet: function(d){
+                               return d.exchange==1?"已兑换":"未兑换"
+                            }}
+                        ,{fixed: 'right', title:'操作', toolbar: '#toolbarDemo2', width:150}
+                    ]]
+                });
+
+
+                //监听事件
+                table.on('tool(test)', function(obj){
+                    //var checkStatus = table.checkStatus(obj.config.id);
+					var data=obj.data;
+					console.log("asd");
+                    switch(obj.event){
+                        case 'delete':
+                            layer.confirm('真的删除'+data.name, function(index){
+                                obj.del();
+                                $.ajax({
+                                    type:"post",
+                                    url:"/luck/product/delete",
+                                    async:true,
+                                    data:JSON.stringify({id:data.id}),
+                                    processData:false,
+                                    contentType: "application/json",
+                                    success:function(res){
+                                        if(res.status=="SUCCESS"){
+                                            layer.msg("删除成功");
+                                            layer.close(index);
+                                        }
+                                    }
+                                });
+
+                            });
+                            break;
+                        case 'update':
+                            layer.open({
+                                type: 2,
+                                area: ['500px', '300px'],
+                                content: '/luck/fragment/productUpdate.html?id='+data.id
+                            });
+                            break;
+						case 'add':
+						   //layer.msg("添加");
+						    break;
+                    };
+                });
+
+                table.on('tool(test2)', function(obj){
+                    var data=obj.data;;
+                    var tr = obj.tr; //获得当前行 tr 的DOM对象
+                    switch(obj.event){
+						case 'exchange':
+                            $.ajax({
+                                type:"post",
+                                url:"/luck/lup/update",
+                                async:true,
+                                data:JSON.stringify({id:data.id,exchange:1,pname:data.pname,uid:data.uid}),
+                                processData:false,
+                                contentType: "application/json",
+                                success:function(res){
+                                    if(res.status=="SUCCESS"){
+                                        layer.msg("兑换状态设置成功");
+                                        $(tr).find("[data-field='exchange']").children().html("已兑换");
+                                    }
+                                }
+                            });
+
+
+                            break;
+					}
+				});
+
+                $("#btn_add").click(function () {
+                    layer.open({
+                        type: 2,
+                        area: ['500px', '300px'],
+                        content: '/luck/fragment/productAdd.html'
+                    });
+                })
+
+			});
+			
+
+		</script>
+	</head>
+	<body>
+		<div class="layui-container"> 
+			<div class="layui-row">
+				<div style="background-color: #ffbe03;" style="height: 200px;" class="layui-col-xs12">
+					<div class="lucky_header"></div>
+				</div>
+				<!--<div class="layui-col-xs6 layui-col-sm6 layui-col-md4">
+					移动：6/12 | 平板：6/12 | 桌面：4/12
+				</div>-->
+			</div>
+			<div class="layui-row">
+				<div class="layui-col-xs12">
+					<div class="layui-tab">
+						<ul class="layui-tab-title">
+							<li class="layui-this">商品管理</li>
+							<li>用户管理</li>
+						</ul>
+						<div class="layui-tab-content">
+							<div class="layui-tab-item layui-show">
+								<h3 style="color: red"><span>大转盘最大容量9个商品超过9个，添加不成功</span></h3>
+								<table id="demo" lay-filter="test"></table>
+							</div>
+							<div class="layui-tab-item">
+								<table id="demo2" lay-filter="test2"></table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+
+</html>

@@ -1,0 +1,154 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv= "pragma" content= "no-cache"/>
+    <meta http-equiv= "Cache-Control" content= "no-cache, must-revalidate"/>
+    <meta http-equiv= "expires" content= "Thu, 01 Jan 1970 00:00:01 GMT"/>
+    <meta http-equiv= "expires" content= "0"/>
+    <title>现金转不停</title>
+	
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <link href="css/component.css" rel="stylesheet" type="text/css">
+    <link href="css/award.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="css/animate.min.css"/>
+    <link rel="stylesheet" href="layui/css/layui.css">
+    <style>
+        .line2{
+            width: 90vw;
+            height: 8vw;
+            position: absolute;
+            top: 146vw;
+            left: 5vw;
+            line-height: 8vw;
+            font-size: 3vw;
+            color: #EECFCF;
+            text-align: center;
+            border-radius: 20px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            z-index: 2;
+        }
+    </style>
+
+</head>
+<body>
+	<input type="hidden" name="gamed" id="gamed" value="{{gamed}}" />
+	<input type="hidden" name="gameState" id="gameState" value="{{gameState}}" />
+	<input type="hidden" name="cardCode" id="cardCode" value="{{cardCode}}" />
+	<input type="hidden" name="mId" id="mId" value="{{mId}}" />
+<!-------------抽奖页面-------------->
+	<div class="ml-main" id="ml-main">
+		<img class="main_back" src="picture/back.png"/>
+		<img class="animated zoomIn img_2_1" src="picture/img_1.png">
+		<img class="animated bounceIn img_2_2" src="picture/img_2.png">
+        <div class="kePublic">
+            <!--转盘效果开始-->
+            <div style="margin:0 auto">
+                <div class="banner">
+                    <div class="turnplate" style="background-image:url(images/turnplate-bg_2.png);background-size:100% 100%;font-size:24px !important;">
+                        <canvas class="item" id="wheelcanvas" width="516" height="516"></canvas>
+                        <img id="tupBtn" class="pointer" src="picture/turnplate-pointer_2.png"/>
+                    </div>
+                </div>
+            </div>
+            <!--转盘效果结束-->
+            <div class="clear"></div>
+        </div>
+        <img class="bottom_shadow" src="picture/bottom_shadow.png"/>
+        <img class="animated zoomIn kePublic_back" src="picture/back1.png"/>
+
+        <div class="line2">
+            <button id="btn_myaward" class="layui-btn layui-btn-warm">我的奖品</button>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <button id="btn_shdz" class="layui-btn layui-btn-warm">收货地址</button>
+        </div>
+        <!--------------滚动中奖纪录---------------->
+        <div class="record_line" id="Marquee">
+        	<div id="">
+        		恭喜  159****3540  的用户抽中  <span id="gift_coupon">200元现金代金券</span>
+        	</div>
+            <div id="">
+                恭喜  180****1120  的用户抽中  <span id="gift_coupon">200元现金代金券</span>
+            </div>
+        </div>
+        <!-------------底部声明-------------->
+        <img class="rule_title" src="picture/rule_title.png"/>
+        <div class="rule_text">
+        	点击转盘进行抽奖，每人单充200元以上可以抽奖一次，400元2次，以此类推。抽中的奖品券可以进行核销兑换。<br>
+        </div>
+	</div>
+    
+    <!-------------中奖弹窗页面-------------->
+    <div class="zj-main" id="zj-main">
+            <div class="txzl">
+            	<div class="zj_text">
+	            	中奖啦<br>恭喜获得<span id="jiangpin"></span>一份<br>可在我的券包中查看
+            	</div>
+            	<div class="close_zj">关闭</div>
+            </div>
+	</div>
+    
+    <!-------------谢谢参与弹窗-------------->
+    <div class="xxcy-main" id="xxcy-main">
+    	<div class="xxcy">
+        	<div class="xxcy_text">
+        		很遗憾<br>没有抽中礼品
+        	</div>   
+        	<div class="close_xxcy">关闭</div>
+        </div>
+    </div>
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/mui.min.js"></script>
+<script type="text/javascript" src="js/awardrotate.js"></script>
+<!--<script type="text/javascript" src="js/main.js"></script>-->
+<script type="text/javascript" src="js/award.js"></script>
+    <script src="layui/layui.js"></script>
+    <script src="js/common.js"></script>
+    <script type="text/javascript">
+        //一般直接写在一个js文件中
+        layui.use(['element','layer', 'form','table'], function() {
+            layer = layui.layer,
+                form = layui.form,
+                element = layui.element,
+                table = layui.table;
+
+           var uid= getQueryString("pnum");
+           if(uid==""||uid==null||uid===undefined){
+               alert("非法参数错误，请重新打开页面!");
+               window.location.reload();
+           }
+            $(function(){
+                $("img").on("click",function(){
+                    return false;
+                });
+                document.addEventListener("WeixinJSBridgeReady",function(){
+                    WeixinJSBridge.call('hideOptionMenu');
+                });
+            });
+            
+            $("#btn_myaward").click(function () {
+                layer.open({
+                    type: 2,
+                    area: ['300px', '300px'],
+                    content: '/luck/fragment/myaward.html?pnum='+uid
+                });
+            });
+            btn_shdz
+
+            $("#btn_shdz").click(function () {
+                layer.open({
+                    type: 2,
+                    area: ['400px',"600px"],
+                    content: ['/luck/fragment/myaddress.html?pnum='+uid,"no"]
+                });
+            });
+        });
+
+</script>
+
+</body>
+</html>
